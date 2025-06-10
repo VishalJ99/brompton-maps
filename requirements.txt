@@ -1,0 +1,11 @@
+# Core API dependencies
+flask>=2.3.0
+flask-cors>=4.0.0
+networkx>=3.1
+requests>=2.31.0
+python-dotenv>=1.0.0
+googlemaps>=4.10.0
+gunicorn>=21.2.0
+
+# Optional: Development and testing
+ruff>=0.1.0  # Code formatting and linting (optional)

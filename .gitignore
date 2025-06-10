@@ -1,0 +1,52 @@
+# Environment variables
+.env
+
+# Development artifacts
+commit_diff_summary.txt
+scratchpad.md
+
+# Frontend configuration (use config.js.example as template)
+frontend/js/config.js
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.cpython*
+.pytest_cache/
+*.egg-info/
+
+# Generated graph files and caches
+# Note: *.pickle files are now tracked with Git LFS in data/ directory
+
+# Searchable graph files (generated, can be rebuilt)
+*_searchable.json
+
+# Note: Large JSON files are tracked with Git LFS
+
+# Build and progress logs
+*.log
+*_progress.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Distribution files
+build/
+dist/
+*.egg-info/

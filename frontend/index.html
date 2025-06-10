@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brompton Maps - London Tube & Bike Router</title>
+
+    <!-- Mapbox GL JS -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
+
+    <!-- Google Maps Places API (loaded in app.js after config) -->
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Panel: Route Controls -->
+        <div class="control-panel">
+            <div class="logo-section">
+                <h1>🚴 Brompton Maps</h1>
+                <p class="tagline">Optimal bike + tube routing for London</p>
+            </div>
+
+            <div class="route-input-section">
+                <h2>Plan Your Journey</h2>
+
+                <!-- Tab buttons for input mode -->
+                <div class="input-mode-tabs">
+                    <button class="tab-button active" data-mode="coordinates">Route Planner</button>
+                    <button class="tab-button" data-mode="settings">Advanced Settings</button>
+                </div>
+
+                <!-- Coordinate input mode -->
+                <div id="coordinate-input" class="input-mode-panel active">
+                    <div class="input-group">
+                        <label>From Location:</label>
+                        <input type="text" id="from-address" class="address-input" placeholder="Search for starting location...">
+                        <input type="hidden" id="from-lat">
+                        <input type="hidden" id="from-lon">
+                        <small class="help-text">Type to search or click on map</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label>To Location:</label>
+                        <input type="text" id="to-address" class="address-input" placeholder="Search for destination...">
+                        <input type="hidden" id="to-lat">
+                        <input type="hidden" id="to-lon">
+                        <small class="help-text">Type to search or click on map</small>
+                    </div>
+                </div>
+
+                <!-- Advanced Settings Panel -->
+                <div id="settings-input" class="input-mode-panel">
+                    <div class="settings-section">
+                        <h3>Timing Parameters</h3>
+
+                        <div class="input-group">
+                            <label for="station-access-time">Station Access Time (minutes):</label>
+                            <input type="number" id="station-access-time" value="2" min="0" max="10" step="0.5">
+                            <small class="help-text">Time to enter/exit a station</small>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="train-waiting-time">Train Waiting Time (minutes):</label>
+                            <input type="number" id="train-waiting-time" value="5" min="0" max="15" step="0.5">
+                            <small class="help-text">Average time waiting on platform</small>
+                        </div>
+                        <div class="input-group">
+                            <label for="line-change-time">Line Change Time (minutes):</label>
+                            <input type="number" id="line-change-time" value="5" min="0" step="0.5">
+                            <small class="help-text">Time to change between tube lines</small>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>About Cycle Times</h3>
+                        <p class="info-text">
+                            🚴 Cycling times are calculated assuming an average speed of ~15 km/h,
+                            typical for urban cycling with a folding bike. Your actual times may vary
+                            based on fitness level and traffic conditions.
+                        </p>
+                    </div>
+
+                    <button id="reset-settings" class="secondary-button">
+                        Reset to Defaults
+                    </button>
+                </div>
+
+                <button id="find-route" class="route-button" disabled>
+                    Find Route
+                </button>
+            </div>
+
+            <div class="route-results" id="route-results">
+                <!-- Route details will be inserted here -->
+            </div>
+
+            <div class="status-section">
+                <div id="graph-status" class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Checking graph status...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Map -->
+        <div class="map-container">
+            <div id="map"></div>
+
+            <!-- Map Legend -->
+            <div class="map-legend" id="map-legend">
+                <h3>Legend</h3>
+                <div class="legend-section">
+                    <h4>Transport Modes</h4>
+                    <div class="legend-item">
+                        <span class="legend-line bike-line"></span>
+                        <span>Bike Route</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-line tube-line"></span>
+                        <span>Tube Route</span>
+                    </div>
+                </div>
+                <div class="legend-section">
+                    <h4>Tube Lines</h4>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #B36305"></span>
+                        <span>Bakerloo</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #E32017"></span>
+                        <span>Central</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #FFD300"></span>
+                        <span>Circle</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #00782A"></span>
+                        <span>District</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #F3A9BB"></span>
+                        <span>Hammersmith & City</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #A0A5A9"></span>
+                        <span>Jubilee</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #9B0056"></span>
+                        <span>Metropolitan</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #000000"></span>
+                        <span>Northern</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #003688"></span>
+                        <span>Piccadilly</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #0098D4"></span>
+                        <span>Victoria</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #95CDBA"></span>
+                        <span>Waterloo & City</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Calculating optimal route...</p>
+    </div>
+
+    <!-- Simple Mobile Header -->
+    <div class="mobile-header" id="mobile-header" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 4px; z-index: 1000; box-sizing: border-box;">
+        <div style="display: flex; gap: 3px; align-items: center; box-sizing: border-box;">
+            <input type="text" id="mobile-from" placeholder="From" style="flex: 1; padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; min-width: 0; box-sizing: border-box;">
+            <input type="text" id="mobile-to" placeholder="To" style="flex: 1; padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; min-width: 0; box-sizing: border-box;">
+            <button id="mobile-go" style="padding: 5px 8px; background: #003688; color: white; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; white-space: nowrap; box-sizing: border-box;">Go</button>
+        </div>
+    </div>
+    
+    <!-- Mobile Results Display -->
+    <div class="mobile-results" id="mobile-results" style="display: none; position: fixed; top: 50px; left: 10px; right: 10px; background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 16px; z-index: 999; max-height: 60vh; overflow-y: auto;">
+        <button onclick="document.getElementById('mobile-results').style.display='none'" style="position: absolute; top: 8px; right: 8px; background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+        <div id="mobile-results-content">
+            <!-- Results will be inserted here -->
+        </div>
+    </div>
+    
+    <!-- Force show mobile header on mobile devices -->
+    <script>
+        // Immediate mobile header visibility
+        if (window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            document.getElementById('mobile-header').style.display = 'block';
+            document.body.style.paddingTop = '60px'; // Prevent content overlap
+        }
+    </script>
+
+    <!-- JavaScript -->
+    <script src="js/config.js"></script>
+    <script src="js/mobile-simple.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/routing.js"></script>
+    <script src="js/visualization.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+[tool.ruff]
+# Python version
+target-version = "py310"
+
+# Maximum line length
+line-length = 100
+
+# Directories to exclude
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".pytest_cache",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+# Enable specific rule categories
+select = [
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "F",     # Pyflakes
+    "I",     # isort
+    "N",     # pep8-naming
+    "UP",    # pyupgrade
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "SIM",   # flake8-simplify
+    "TCH",   # flake8-type-checking
+    "PTH",   # flake8-use-pathlib
+    "RUF",   # Ruff-specific rules
+]
+
+# Rules to ignore
+ignore = [
+    "E501",   # Line too long (handled by formatter)
+    "E203",   # Whitespace before ':' (conflicts with black)
+    "PTH123", # Use pathlib - prefer open() for simplicity in this project
+    "N806",   # Variable names - constants can be uppercase in functions
+    "SIM115", # Context manager simplification - existing code is clear
+    "B904",   # Exception chaining - not critical for this project
+    "F401",   # Unused imports - may be used for testing/development
+    "UP035",  # Prefer typing.Tuple
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+
+# Disable automatic fixes for specific rules
+unfixable = [
+    "F401",   # Don't auto-remove unused imports (might be intentional)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Test files can have additional flexibility
+"test_*.py" = [
+    "S101",   # Allow assert statements in tests
+    "PLR2004", # Allow magic values in tests
+]
+
+[tool.ruff.lint.isort]
+# Grouping and sorting preferences
+known-first-party = ["brompton"]
+force-single-line = false
+lines-after-imports = 2
+
+[tool.ruff.format]
+# Use double quotes for strings
+quote-style = "double"
+
+# Use spaces around the equals sign in keyword arguments
+indent-style = "space"
+
+# Respect magic trailing commas
+skip-magic-trailing-comma = false
+
+# Automatically detect line endings
+line-ending = "auto"

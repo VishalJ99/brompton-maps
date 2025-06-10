@@ -1,0 +1,18 @@
+# Git LFS configuration for large files
+# Track large JSON graph files with LFS
+data/bike_graph.json filter=lfs diff=lfs merge=lfs -text
+data/merged_graph.json filter=lfs diff=lfs merge=lfs -text
+data/merged_multilayer_graph.json filter=lfs diff=lfs merge=lfs -text
+# Track any future large graph files in data directory
+data/*_graph.json filter=lfs diff=lfs merge=lfs -text
+data/tfl_graph.json filter=lfs diff=lfs merge=lfs -text
+data/tfl_graph_progress.json filter=lfs diff=lfs merge=lfs -text
+data/tfl_graph_searchable.json filter=lfs diff=lfs merge=lfs -text
+data/tfl_multilayer_graph_searchable.json filter=lfs diff=lfs merge=lfs -text
+data/bike_graph_progress.json filter=lfs diff=lfs merge=lfs -text
+data/bike_graph_searchable.json filter=lfs diff=lfs merge=lfs -text
+data/bike_multilayer_graph_searchable.json filter=lfs diff=lfs merge=lfs -text
+data/merged_graph_searchable.json filter=lfs diff=lfs merge=lfs -text
+data/merged_multilayer_graph_searchable.json filter=lfs diff=lfs merge=lfs -text
+
+# Track large pickle graph files with LFS
